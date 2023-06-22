@@ -1,0 +1,26 @@
+---
+apt_configuration_directory: /etc/apt/apt.conf.d
+apt_lists_directory: /var/lib/apt/lists
+
+apt_default_mirrors:
+  Debian: http://deb.debian.org/debian
+  Ubuntu: http://archive.ubuntu.com/ubuntu
+
+apt_default_repositories:
+  Debian:
+    default:
+      - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }} main contrib non-free"
+      - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }}-updates main contrib non-free"
+      - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }}-backports main contrib non-free"
+      - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }}-security main contrib non-free"
+    buster:
+      - "deb {{ apt_default_mirrors.Debian }} buster main contrib non-free"
+      - "deb {{ apt_default_mirrors.Debian }} buster-updates main contrib non-free"
+      - "deb {{ apt_default_mirrors.Debian }} buster-backports main contrib non-free"
+      - "deb {{ apt_default_mirrors.Debian }}-security buster/updates main contrib non-free"
+  Ubuntu:
+    default:
+      - "deb {{ apt_default_mirrors.Ubuntu }} {{ ansible_distribution_release }} main restricted universe multiverse"
+      - "deb {{ apt_default_mirrors.Ubuntu }} {{ ansible_distribution_release }}-updates main restricted universe multiverse"
+      - "deb {{ apt_default_mirrors.Ubuntu }} {{ ansible_distribution_release }}-backports main restricted universe multiverse"
+      - "deb {{ apt_default_mirrors.Ubuntu }} {{ ansible_distribution_release }}-security main restricted universe multiverse"

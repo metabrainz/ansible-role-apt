@@ -1,0 +1,10 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
+{% import "apt-macros.j2" as macros with context %}
+{% if _apt_configuration %}
+
+{%   for option, value in _apt_configuration | dictsort %}
+{{ macros.apt_format_option(option, value) -}}
+{%   endfor %}
+{% endif %}
+

@@ -1,0 +1,25 @@
+---
+apt_configuration:
+  "APT::Periodic::Update-Package-Lists": 1
+  "APT::Periodic::Unattended-Upgrade": 0
+  "Unattended-Upgrade::Mail": "user@example.com"
+
+apt_repository_keys:
+  - filename: consul.asc
+    url: https://apt.releases.hashicorp.com/gpg
+
+apt_group_repositories:
+  - filename: consul
+    repo: >-
+      deb [signed-by={{ apt_repository_keys_directory }}/consul.asc]
+      https://apt.releases.hashicorp.com
+      {{ ansible_distribution_release }}
+      main
+    update_cache: true
+
+apt_packages:
+  - unattended-upgrades
+
+apt_group_packages:
+  - name: htop
+    when: "{{ inventory_hostname == 'invalid' }}"

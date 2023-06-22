@@ -1,0 +1,36 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Ensure /etc/apt/sources.list is empty
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list
+        content: |
+          # Ansible managed
+          # This file is intentionally left blank
+        mode: "0644"
+      check_mode: true
+      register: result
+      failed_when: result is changed
+
+    - name: Ensure htop package is not installed
+      ansible.builtin.apt:
+        name: htop
+        state: absent
+      check_mode: true
+      register: result
+      failed_when: result is changed
+
+    - name: Ensure stunnel4 is installed on 20.04
+      ansible.builtin.command: dpkg-query -S stunnel4
+      register: result
+      changed_when: false
+      failed_when: ansible_distribution_release == "focal" and result.rc != 0
+
+    - name: Ensure apt config options are set correctly
+      ansible.builtin.command: apt-config dump --format %v {{ item.key | quote }}
+      register: result
+      changed_when: false
+      failed_when: result.stdout != (item.value | string)
+      loop: "{{ apt_configuration | dict2items }}"

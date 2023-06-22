@@ -1,0 +1,113 @@
+---
+- name: Ensure apt lists directory exists
+  ansible.builtin.file:
+    path: "{{ apt_lists_directory }}"
+    mode: "0755"
+    state: directory
+
+- name: Install empty /etc/apt/sources.list
+  ansible.builtin.copy:
+    dest: "/etc/apt/sources.list"
+    content: |
+      # Ansible managed
+      # This file is intentionally left blank
+    mode: "0644"
+  when: apt_install_empty_sources_list | bool
+
+- name: Install apt configuration
+  ansible.builtin.template:
+    src: etc/apt/apt.conf.d/99ansible.j2
+    dest: "{{ apt_configuration_file }}"
+    owner: "{{ apt_configuration_file_owner | d(omit) }}"
+    group: "{{ apt_configuration_file_group | d(omit) }}"
+    mode: "{{ apt_configuration_file_mode }}"
+  vars:
+    _apt_configuration: >-
+      {{
+        apt_configuration | combine(
+          apt_group_configuration, apt_host_configuration,
+          list_merge=apt_configuration_list_merge,
+          recursive=apt_configuration_recursive_merge
+        )
+      }}
+
+- name: Download apt repository keys
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ apt_repository_keys_directory }}/{{ item.filename | mandatory('filename is required') }}"
+    checksum: "{{ item.checksum | d(omit) }}"
+    mode: "{{ item.mode | d(omit) }}"
+  loop: "{{ _apt_repository_keys | flatten | selectattr('url', 'defined') | list }}"
+  vars:
+    _apt_repository_keys:
+      - "{{ apt_repository_keys }}"
+      - "{{ apt_group_repository_keys }}"
+      - "{{ apt_host_repository_keys }}"
+
+- name: Install apt repository keys
+  ansible.builtin.template:
+    src: usr/share/keyrings/key.j2
+    dest: "{{ apt_repository_keys_directory }}/{{ item.filename | mandatory('filename is required') }}"
+    mode: "{{ item.mode | d(omit) }}"
+  loop: "{{ _apt_repository_keys | flatten | rejectattr('url', 'defined') | list }}"
+  vars:
+    _apt_repository_keys:
+      - "{{ apt_repository_keys }}"
+      - "{{ apt_group_repository_keys }}"
+      - "{{ apt_host_repository_keys }}"
+
+- name: Configure apt repositories
+  ansible.builtin.apt_repository:
+    repo: "{{ item.repo if item is mapping else item }}"
+    state: "{{ item.state | d('present') }}"
+    filename: "{{ item.filename | d(apt_repositories_file) }}"
+    codename: "{{ item.codename | d(omit) }}"
+    mode: "{{ item.mode | d(omit) }}"
+    validate_certs: "{{ item.validate_certs | d(omit) }}"
+    update_cache: "{{ item.update_cache | d(omit) }}"
+  loop: "{{ _apt_repositories | flatten }}"
+  vars:
+    _apt_repositories:
+      - "{{ apt_repositories }}"
+      - "{{ apt_group_repositories }}"
+      - "{{ apt_host_repositories }}"
+
+- name: Update apt cache and perform an upgrade if requested
+  ansible.builtin.apt:
+    autoclean: "{{ (apt_autoclean | bool) if apt_autoclean is defined else omit }}"
+    autoremove: "{{ (apt_autoremove | bool) if apt_autoremove is defined else omit }}"
+    clean: "{{ (apt_clean | bool) if apt_clean is defined else omit }}"
+    update_cache: "{{ apt_update_cache | bool }}"
+    cache_valid_time: "{{ apt_cache_valid_time | d(omit) }}"
+    upgrade: "{{ apt_upgrade | d(omit) }}"
+  when: (apt_autoclean | d() | bool) or (apt_autoremove | d() | bool) or (apt_clean | d() | bool)
+    or (apt_update_cache | bool) or (apt_upgrade | d() | bool)
+
+- name: Install packages
+  ansible.builtin.apt:
+    name: "{{ _apt_packages | flatten | reject('mapping') | list }}"
+    state: present
+  vars:
+    _apt_packages:
+      - "{{ apt_packages }}"
+      - "{{ apt_group_packages }}"
+      - "{{ apt_host_packages }}"
+
+- name: Install packages with extra options
+  ansible.builtin.apt:
+    name: "{{ item.name }}"
+    state: "{{ item.state | d('present') }}"
+    default_release: "{{ item.default_release | d(omit) }}"
+    force: "{{ item.force | d(omit) }}"
+    install_recommends: "{{ item.install_recommends | d(omit) }}"
+    purge: "{{ item.purge | d(omit) }}"
+    dpkg_options: "{{ item.dpkg_options | d(omit) }}"
+    only_upgrade: "{{ item.only_upgrade | d(omit) }}"
+    policy_rc_d: "{{ item.policy_rc_d | d(omit) }}"
+  loop: "{{ _apt_packages | flatten | select('mapping') | list }}"
+  when: item.when | d(true)
+  vars:
+    _apt_packages:
+      - "{{ apt_packages }}"
+      - "{{ apt_group_packages }}"
+      - "{{ apt_host_packages }}"

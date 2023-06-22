@@ -1,0 +1,15 @@
+---
+apt_host_repository_keys:
+  - filename: grafana.asc
+    file: grafana.asc
+
+apt_host_repositories:
+  - filename: grafana
+    repo: >-
+      deb [signed-by={{ apt_repository_keys_directory }}/grafana.asc]
+      https://apt.grafana.com stable main
+
+apt_host_packages:
+  - netcat-openbsd
+  - name: stunnel4
+    when: "{{ ansible_distribution_release == 'focal' }}"

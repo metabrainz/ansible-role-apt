@@ -1,0 +1,8 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: Delete /var/lib/apt/lists
+      ansible.builtin.file:
+        path: /var/lib/apt/lists
+        state: absent

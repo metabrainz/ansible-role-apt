@@ -12,7 +12,7 @@ apt_default_repositories:
       - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }} main contrib non-free"
       - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }}-updates main contrib non-free"
       - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }}-backports main contrib non-free"
-      - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }}-security main contrib non-free"
+      - "deb {{ apt_default_mirrors.Debian }}-security {{ ansible_distribution_release }}-security main contrib non-free"
     buster:
       - "deb {{ apt_default_mirrors.Debian }} buster main contrib non-free"
       - "deb {{ apt_default_mirrors.Debian }} buster-updates main contrib non-free"

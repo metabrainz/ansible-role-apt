@@ -34,7 +34,7 @@
 - name: Download apt repository keys
   ansible.builtin.get_url:
     url: "{{ item.url }}"
-    dest: "{{ apt_repository_keys_directory }}/{{ item.filename | mandatory('filename is required') }}"
+    dest: "{{ apt_repository_keys_directory }}/{{ item.filename | mandatory(msg='filename is required') }}"
     checksum: "{{ item.checksum | d(omit) }}"
     mode: "{{ item.mode | d(omit) }}"
   loop: "{{ _apt_repository_keys | flatten | selectattr('url', 'defined') | list }}"
@@ -47,7 +47,7 @@
 - name: Install apt repository keys
   ansible.builtin.template:
     src: usr/share/keyrings/key.j2
-    dest: "{{ apt_repository_keys_directory }}/{{ item.filename | mandatory('filename is required') }}"
+    dest: "{{ apt_repository_keys_directory }}/{{ item.filename | mandatory(msg='filename is required') }}"
     mode: "{{ item.mode | d(omit) }}"
   loop: "{{ _apt_repository_keys | flatten | rejectattr('url', 'defined') | list }}"
   vars:

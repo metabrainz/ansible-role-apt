@@ -1,4 +1,6 @@
 ---
+apt_cache_valid_time: 3600
+
 apt_configuration:
   "APT::Periodic::Update-Package-Lists": 1
   "APT::Periodic::Unattended-Upgrade": 0

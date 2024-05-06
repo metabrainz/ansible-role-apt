@@ -16,7 +16,8 @@ apt_default_repositories:
     buster:
       - "deb {{ apt_default_mirrors.Debian }} buster main contrib non-free"
       - "deb {{ apt_default_mirrors.Debian }} buster-updates main contrib non-free"
-      - "deb {{ apt_default_mirrors.Debian }} buster-backports main contrib non-free"
+      - repo: "deb {{ apt_default_mirrors.Debian }} buster-backports main contrib non-free"
+        state: absent
       - "deb {{ apt_default_mirrors.Debian }}-security buster/updates main contrib non-free"
   Ubuntu:
     default:

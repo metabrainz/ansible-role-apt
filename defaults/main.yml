@@ -2,11 +2,11 @@
 apt_install_empty_sources_list: true
 
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
-#apt_autoclean: false
-#apt_autoremove: false
-#apt_cache_valid_time: 0
-#apt_clean: false
-#apt_upgrade: dist
+# apt_autoclean: false
+# apt_autoremove: false
+# apt_cache_valid_time: 0
+# apt_clean: false
+# apt_upgrade: dist
 apt_update_cache: true
 
 apt_repository_keys_directory: /usr/share/keyrings
@@ -25,23 +25,23 @@ apt_group_repositories: []
 apt_host_repositories: []
 
 apt_configuration_file: "{{ apt_configuration_directory }}/99ansible"
-#apt_configuration_file_owner:
-#apt_configuration_file_group:
+# apt_configuration_file_owner:
+# apt_configuration_file_group:
 apt_configuration_file_mode: "0644"
 
-#apt_configuration:
-#  "APT::Periodic::Update-Package-Lists": 0
-#  "APT::Periodic::Unattended-Upgrade": 0
-#  "Unattended-Upgrade::Allowed-Origins":
-#    - "${distro_id}:${distro_codename}"
-#    - "${distro_id}:${distro_codename}-security"
-#    - "${distro_id}ESMApps:${distro_codename}-apps-security"
-#    - "${distro_id}ESM:${distro_codename}-infra-security"
-#    #- "${distro_id}:${distro_codename}-updates"
-#    #-"${distro_id}:${distro_codename}-proposed"
-#    #-"${distro_id}:${distro_codename}-backports"
-#  "Unattended-Upgrade::Package-Blacklist": []
-#  "Unattended-Upgrade::DevRelease": auto
+# apt_configuration:
+#   "APT::Periodic::Update-Package-Lists": 0
+#   "APT::Periodic::Unattended-Upgrade": 0
+#   "Unattended-Upgrade::Allowed-Origins":
+#     - "${distro_id}:${distro_codename}"
+#     - "${distro_id}:${distro_codename}-security"
+#     - "${distro_id}ESMApps:${distro_codename}-apps-security"
+#     - "${distro_id}ESM:${distro_codename}-infra-security"
+#     #- "${distro_id}:${distro_codename}-updates"
+#     #-"${distro_id}:${distro_codename}-proposed"
+#     #-"${distro_id}:${distro_codename}-backports"
+#   "Unattended-Upgrade::Package-Blacklist": []
+#   "Unattended-Upgrade::DevRelease": auto
 apt_configuration: {}
 apt_group_configuration: {}
 apt_host_configuration: {}

@@ -80,8 +80,12 @@
     update_cache: "{{ apt_update_cache | bool }}"
     cache_valid_time: "{{ apt_cache_valid_time | d(omit) }}"
     upgrade: "{{ apt_upgrade | d(omit) }}"
-  when: (apt_autoclean | d() | bool) or (apt_autoremove | d() | bool) or (apt_clean | d() | bool)
-    or (apt_update_cache | bool) or (apt_upgrade | d() | bool)
+  when: >-
+    (apt_autoclean | d() | bool) or
+    (apt_autoremove | d() | bool) or
+    (apt_clean | d() | bool) or
+    (apt_update_cache | bool)
+    or (apt_upgrade | d())
 
 - name: Install packages
   ansible.builtin.apt:

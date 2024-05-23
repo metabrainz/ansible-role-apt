@@ -3,25 +3,34 @@ apt_configuration_directory: /etc/apt/apt.conf.d
 apt_lists_directory: /var/lib/apt/lists
 
 apt_default_mirrors:
-  Debian: http://deb.debian.org/debian
-  Ubuntu: http://archive.ubuntu.com/ubuntu
+  Debian:
+    default: http://deb.debian.org/debian
+  Ubuntu:
+    x86_64: http://archive.ubuntu.com/ubuntu
+    default: http://ports.ubuntu.com/ubuntu-ports
+
+apt_mirror: >-
+  {{
+    apt_default_mirrors[ansible_distribution][ansible_architecture] |
+    d(apt_default_mirrors[ansible_distribution]['default'])
+  }}
 
 apt_default_repositories:
   Debian:
     default:
-      - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }} main contrib non-free"
-      - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }}-updates main contrib non-free"
-      - "deb {{ apt_default_mirrors.Debian }} {{ ansible_distribution_release }}-backports main contrib non-free"
-      - "deb {{ apt_default_mirrors.Debian }}-security {{ ansible_distribution_release }}-security main contrib non-free"
+      - "deb {{ apt_mirror }} {{ ansible_distribution_release }} main contrib non-free"
+      - "deb {{ apt_mirror }} {{ ansible_distribution_release }}-updates main contrib non-free"
+      - "deb {{ apt_mirror }} {{ ansible_distribution_release }}-backports main contrib non-free"
+      - "deb {{ apt_mirror }}-security {{ ansible_distribution_release }}-security main contrib non-free"
     buster:
-      - "deb {{ apt_default_mirrors.Debian }} buster main contrib non-free"
-      - "deb {{ apt_default_mirrors.Debian }} buster-updates main contrib non-free"
-      - repo: "deb {{ apt_default_mirrors.Debian }} buster-backports main contrib non-free"
+      - "deb {{ apt_mirror }} buster main contrib non-free"
+      - "deb {{ apt_mirror }} buster-updates main contrib non-free"
+      - repo: "deb {{ apt_mirror }} buster-backports main contrib non-free"
         state: absent
-      - "deb {{ apt_default_mirrors.Debian }}-security buster/updates main contrib non-free"
+      - "deb {{ apt_mirror }}-security buster/updates main contrib non-free"
   Ubuntu:
     default:
-      - "deb {{ apt_default_mirrors.Ubuntu }} {{ ansible_distribution_release }} main restricted universe multiverse"
-      - "deb {{ apt_default_mirrors.Ubuntu }} {{ ansible_distribution_release }}-updates main restricted universe multiverse"
-      - "deb {{ apt_default_mirrors.Ubuntu }} {{ ansible_distribution_release }}-backports main restricted universe multiverse"
-      - "deb {{ apt_default_mirrors.Ubuntu }} {{ ansible_distribution_release }}-security main restricted universe multiverse"
+      - "deb {{ apt_mirror }} {{ ansible_distribution_release }} main restricted universe multiverse"
+      - "deb {{ apt_mirror }} {{ ansible_distribution_release }}-updates main restricted universe multiverse"
+      - "deb {{ apt_mirror }} {{ ansible_distribution_release }}-backports main restricted universe multiverse"
+      - "deb {{ apt_mirror }} {{ ansible_distribution_release }}-security main restricted universe multiverse"
